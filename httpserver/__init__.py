@@ -17,6 +17,7 @@ class HttpServerThread(BaseThread):
             self.args = dict(((k, v[0]) for k, v in urlparse.parse_qs(x.query).iteritems()))
     
         def do_POST(self):
+            print 'POSTed %s' % (self.path, )
             if self.path == '/get/temperatures/':
                 s = self.server.saver.get(['heating.external', 'heating.internal',
                                        'heating.internal_ref', 'heating.co', 'heating.co_ref',
@@ -24,7 +25,7 @@ class HttpServerThread(BaseThread):
                                        'heating.pump_circ', 'heating.pump_load',
                                        'heating.pump_co', 'heating.set_co_day', 
                                        'heating.set_co_day', 'heating.up', 'heating.mid',
-                                       'irrigation.rainMinutes', 'heating.burner']) or {}  
+                                       'irrigation.rainMinutes']) or {}  
             elif self.path == '/get/power/':
                 s = self.server.saver.get(['power.l1v', 'power.l2v', 'power.l3v', 'power.l1w',
                                            'power.l2w', 'power.l3w', 'power.l1vif', 
@@ -84,7 +85,7 @@ class HttpServerThread(BaseThread):
         self.tqm = tqm
 
     def run(self):
-        httpd = BaseHTTPServer.HTTPServer(('127.0.0.1', 8080), HttpServerThread.HTTPRequestHandler)
+        httpd = BaseHTTPServer.HTTPServer(('', 8080), HttpServerThread.HTTPRequestHandler)
         httpd.reader = self.tqm.get_reader_for('httpserver')
         httpd.saver = self.tqm.get_interface_for('saver')
         httpd.serve_forever()

@@ -84,16 +84,33 @@ def disk_usage(path):
         raise ctypes.WinError()
     return free.value
 
-FREE_SPACE_REQUIRED = 50        # in megabytes
+FREE_SPACE_REQUIRED = 50 * 1024 * 1024       # in bytes
 
 
 class DirectoryNukingThread(threading.Thread):
-    def __init__(self, directory):
-        threading.Thread.__init__(self)
-        self.directory = directory
+    """
+    This thread ensures that there's always enough free space 
+    on the device to write moar data
+    """
+       
+    def find_victim(self):
+        """Find a directory to kill. Return it's path"""
+        k = []
+        for camera in CAMERAS.iterkeys():
+            for dirname in os.listdir('%s%s' % (CAMPATH, camera)):
+                k.append((dirname, '%s%s\\%s' % (CAMPATH, camera, dirname)))
         
+        k.sort()
+        return k[0][1]
+    
     def run(self):
-        shutil.rmtree(self.directory)
+        while True:
+            if disk_usage(CAMPATH) < FREE_SPACE_REQUIRED:
+                target = self.find_victim()
+                print 'Pruning %s' % (target, )
+                target = shutil.rmtree(target)
+                print 'Prune completed!'
+            time.sleep(5)
 
 class CameraThread(threading.Thread):
     def __init__(self, camera):
@@ -112,25 +129,19 @@ class CameraThread(threading.Thread):
             except ValueError:
                 time.sleep(5)
                 continue
-                
-            # check disk space
-            if disk_usage(CAMPATH) < FREE_SPACE_REQUIRED * 1024 * 1024:
-                files = sorted(os.listdir(self.cpath))
-                DirectoryNukingThread(files[0]).start()
-                time.sleep(5)
 
             while True:
                 dt = datetime.datetime.now()
                 dirname = dt.strftime("%Y-%m-%d")
                 dirname = '%s\\%s' % (self.cpath, dirname)
-                filname = dt.strftime("%H-%M-%S") + '.jpg'
+                filname = dt.strftime("%H-%M-%S") 
                 filname = '%s\\%s.jpg' % (dirname, filname)
                 
                 if not os.path.exists(dirname): os.mkdir(dirname)                    
                 if not os.path.exists(filname): break
 
                 time.sleep(0.3)
-            
+
             with open(filname, 'wb') as out:
                 out.write(img)
 
@@ -138,6 +149,8 @@ try:
     os.mkdir(CAMPATH)
 except OSError:
     pass
+
+DirectoryNukingThread().start()
 
 for name, rec in CAMERAS.iteritems():
     CameraThread(CameraGetter(name, rec)).start()

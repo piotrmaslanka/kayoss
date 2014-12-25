@@ -1,15 +1,24 @@
 <?php
-/*    session_start();
-    $_SESSION['authorized'] = true;     // #todo placeholder
-    if (!isset($_SESSION['authorized'])) {
-        if (isset($_SESSION['password'])) {
-            if ($_SESSION['password'] == 'x')
-                $_SESSION['authorized'] == true;
-        } else
-            die();
-    }
-    */
+    session_start();
+
+    $authorized = false;
+    if (!isset($_SESSION['authorized'])) {    
+        
+        // Authentication - by POST, automatic
+        if ($_POST['password'] == '') {
+            $_SESSION['authorized'] = true;
+            $authorized = true;
+        }
+        
+        // Authentication - by referrer, automatic
+        if ($_SERVER['REMOTE_ADDR'] == '127.0.0.1') {
+            $_SESSION['authorized'] == true;
+            $authorized = true;
+        }
+    } else $authorized = true;
+
     if (isset($_POST['gurl'])) {     // Plain POST URL get
+        if (!$authorized) die();
         $ch = curl_init();
         curl_setopt($ch, CURLOPT_URL, 'http://127.0.0.1:8080'.$_POST['gurl']);
         curl_setopt($ch, CURLOPT_PORT, 8080);

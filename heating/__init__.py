@@ -71,7 +71,6 @@ class HeatingThread(BaseThread):
             if f_pump_circ != None: self.saver.save('heating.pump_circ', f_pump_circ)
             if f_pump_load != None: self.saver.save('heating.pump_load', f_pump_load)
             if f_pump_co != None: self.saver.save('heating.pump_co', f_pump_co)
-            if f_heating != None: self.saver.save('heating.burner', f_heating)
                 
             if r_co_day != None: self.saver.save('heating.set_co_day', r_co_day)
             if r_co_night != None: self.saver.save('heating.set_co_night', r_co_night)
