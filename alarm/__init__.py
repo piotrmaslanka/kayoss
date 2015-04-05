@@ -22,13 +22,18 @@ class AlarmThread(BaseThread):
             pk = self.rs485.readRegisters(1, 4070, 3)
             if pk != None:
                 presence, mask, statii = pk
-                self.rs485.writeRegister(1, 4070, 0)
+                try:
+                    self.rs485.writeRegister(1, 4070, 0)
+                except:
+                    pass
                 self.saver.save('alarm.presence', presence)
                 self.saver.save('alarm.mask', mask)
                 self.saver.save('alarm.statii', statii)
                 
                 self.saver.save('failures.alarm', statii & 1)
                     
+
+            time.sleep(2)
 
                                          
             # Go and commit everything to storage

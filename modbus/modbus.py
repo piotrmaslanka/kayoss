@@ -78,6 +78,7 @@ class SerialCommunication(object):
 			msg = self.mm.parseReadFlag(msg, r)
 			return msg
 		else:
+			print 'MODBUS Read Flag failed for %s:%s' % (a, r)
 			raise Exception, 'CRC - '+str(map(ord, msg))
 		
 	def getReg(self, a, r, amount=1, filter=True):
@@ -109,6 +110,7 @@ class SerialCommunication(object):
 		
 			return dbl
 		else:
+			print 'MODBUS Get LTE Register failed for %s:%s' % (a, r)
 			raise Exception, 'CRC - '+str(map(ord, msg))
 
 	def setFlag(self, a, r, v):
@@ -123,3 +125,6 @@ class SerialCommunication(object):
 		self.socket.flushOutput()
 		self.socket.write(self.mm.getWriteQuery(a, r, v))
 		msg = self.socket.read(8)		
+		
+		if not self.mm.validate(msg):
+			raise Exception, 'CRC - '+str(map(ord, msg))

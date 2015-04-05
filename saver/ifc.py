@@ -28,6 +28,12 @@ class SaverInterface(TQM.Interface):
         d = SaverInterface.Deferred()
         self.queue.put(Get(d, keys))
         return d.wait()
+
+    def partial_get(self, keys, placeholder=None):
+        d = SaverInterface.Deferred()
+        self.queue.put(PartialGet(d, keys, placeholder))
+        return d.wait()
     
 Save = namedtuple('Save', ('key', 'value'))
 Get = namedtuple('Get', ('deferred', 'keys'))
+PartialGet = namedtuple('Get', ('deferred', 'keys', 'placeholder'))

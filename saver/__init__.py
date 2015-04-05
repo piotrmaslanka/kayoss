@@ -1,5 +1,5 @@
 from satella.threads import BaseThread
-from kayoss.saver.ifc import SaverInterface, Save, Get
+from kayoss.saver.ifc import SaverInterface, Save, Get, PartialGet
 
 class SaverThread(BaseThread):
     
@@ -18,9 +18,17 @@ class SaverThread(BaseThread):
                 try:
                     k = dict(((k, self.db[k]) for k in msg.keys))
                     msg.deferred.completed(k)
-                except KeyError:
+                except KeyError as e:
                     msg.deferred.completed(None)
                     
+            elif isinstance(msg, PartialGet):
+                reply = {}
+                for key in msg.keys:            
+                    try:
+                        reply[key] = self.db[key]
+                    except KeyError:
+                        reply[key] = msg.placeholder
+                msg.deferred.completed(reply)
         
         
     

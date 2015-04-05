@@ -43,8 +43,12 @@
             z-index: 1;
             bottom: 0;
         }
+
         #mbirrigation-rainMinutes {
+			position: absolute;
+			bottom: 0; right: 0;
             line-height: 60px;
+			height: 60px;
             font-size: 55px;
         }
     </style>
@@ -69,7 +73,7 @@
     <div id="all">
         <div class="tbox pleft ptop" style="background-color: green;">
             <div class="center_indicator" id="mkheating-external"></div>
-            <div id="mbirrigation-rainMinutes" style="position: absolute; bottom: 0; right: 0; height: 20%;">
+            <div id="mbirrigation-rainMinutes">
                 <img src="/media/umbrella.png" style="height: 60px; display: inline;">
                 <span id="mkirrigation-rainMinutes" style="color: white;"></span>
             </div>

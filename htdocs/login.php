@@ -8,8 +8,8 @@
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     </head>
     <body>
-        
-        <form action="login.php" method="post">
+
+       <form action="login.php" method="post">
             Password: <input type="password" name="password"><br>
             <input type="submit" value="OK">
         </form>
