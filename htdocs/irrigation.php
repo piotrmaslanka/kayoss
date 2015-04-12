@@ -129,12 +129,12 @@
 				
 				var visStan = {
 					0:	'STOP',
-					1: 	'S1: Przed domem',
-					2:	'S2: Warzywnik',
-					3:	'S3: Wschód',
-					4:  'S4: Rabata',
-					5:  'S5',
-					6:	'S6',
+					1: 	'S1: Od tarasu',
+					2:	'S2: Przed domem',
+					3:	'S3: Warzywnik',
+					4:  'S4: Ogród lewa',
+					5:  'S5: Rabata',
+					6:	'S6: Ogród prawa',
 					7:  'Kroplenie'
 				};
 				
@@ -157,7 +157,7 @@
 		</div>
 		<div class="rainblock">
 			<div class="descript">Dzisiaj</div>
-			<div class="value"><strong id="mkirrigation-sectionCounter"></strong>l</div>
+			<div class="value"><strong id="mkirrigation-dailyCounter"></strong>l</div>
 		</div>
 		<div style="clear: both;"></div>
 				
