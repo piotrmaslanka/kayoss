@@ -1,7 +1,7 @@
 from __future__ import division
 import time
 from satella.threads import BaseThread
-from kayoss.alarm.ifc import AlarmInterface
+from kayoss.alarm.ifc import AlarmInterface, ArmCircuit, DisarmCircuit, ClearPersistence
 
 class AlarmThread(BaseThread):
     
@@ -16,25 +16,31 @@ class AlarmThread(BaseThread):
     def run(self):
         while True:            
             for msg in self.reader:     # Do we have anything to process?
-                pass
+                if isinstance(msg, ArmCircuit):
+                    mask = self.rs485.readRegisters(1, 4071, 1)
+                    mask = mask | (1 << msg.circuit_number)
+                    self.rs485.writeRegister(1, 4071, mask)
+                elif isinstance(msg, DisarmCircuit):
+                    mask = self.rs485.readRegisters(1, 4071, 1)
+                    mask = mask & (65535 - (1 << msg.circuit_number))
+                    self.rs485.writeRegister(1, 4071, mask)
+                elif isinstance(msg, ClearPersistence):
+                    pass
                         
             # Read all relevanties
             pk = self.rs485.readRegisters(1, 4070, 3)
             if pk != None:
                 presence, mask, statii = pk
-                try:
-                    self.rs485.writeRegister(1, 4070, 0)
-                except:
-                    pass
                 self.saver.save('alarm.presence', presence)
                 self.saver.save('alarm.mask', mask)
                 self.saver.save('alarm.statii', statii)
                 
                 self.saver.save('failures.alarm', statii & 1)
                     
+                    
+                self.rs485.writeRegister(1, 4070, 0)
 
-            time.sleep(2)
-
+            time.sleep(3)
                                          
             # Go and commit everything to storage
 #            if l1v != None: self.saver.save('power.l1v', l1v)
