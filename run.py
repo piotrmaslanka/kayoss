@@ -6,6 +6,7 @@ from kayoss.power import PowerThread
 from kayoss.irrigation import IrrigationThread
 from kayoss.alarm import AlarmThread
 from kayoss.httpserver import HttpServerThread
+from kayoss.sonos import SonosThread
 from kayoss.failures import FailuresThread
 from serial import Serial
 
@@ -17,6 +18,7 @@ if __name__ == '__main__':
     tqm.register_interface('rs485', ModbusThread.TQMInterface)
     tqm.register_interface('heating', HeatingThread.TQMInterface)
     tqm.register_interface('power', PowerThread.TQMInterface)
+    tqm.register_interface('sonos', SonosThread.TQMInterface)
     tqm.register_interface('alarm', AlarmThread.TQMInterface)
     tqm.register_interface('irrigation', IrrigationThread.TQMInterface)
     tqm.register_interface('httpserver', HttpServerThread.TQMInterface)
@@ -31,6 +33,7 @@ if __name__ == '__main__':
     irrigation_t = IrrigationThread(tqm)
     httpserver_t = HttpServerThread(tqm)
     failures_t = FailuresThread(tqm)
+    sonos_t = SonosThread(tqm)
     
     failures_t.start()
     saver_t.start()
@@ -42,6 +45,7 @@ if __name__ == '__main__':
     power_t.start()
     alarm_t.start()
     irrigation_t.start()
+    sonos_t.start()
     
     # Start interface
     httpserver_t.start()
