@@ -44,11 +44,11 @@ class FailuresThread(BaseThread):
                 if v and not self.statedict[k]:
                     # Alarm occurred
                     msg = 'Wystapil '+FailuresThread.LABEL_DICT[k]
-                    send_sms('x', msg)
+                    send_sms('609224334', msg)
                               
                 elif not v and self.statedict[k]:
                     # Alarm out
                     msg = 'Odwoluje '+FailuresThread.LABEL_DICT[k]
-                    send_sms('x', msg)
+                    send_sms('609224334', msg)
                               
                 self.statedict[k] = v

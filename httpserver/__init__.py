@@ -21,6 +21,8 @@ class HttpServerThread(BaseThread):
             except TypeError:
                 args = {}
 
+            s = {}
+                
             if self.path == '/get/temperatures/':
                 s = self.server.saver.partial_get(['heating.external', 'heating.internal',
                                        'heating.internal_ref', 'heating.co', 'heating.co_ref',
@@ -101,9 +103,20 @@ class HttpServerThread(BaseThread):
                     self.server.irrigation.set_forbidKos(value)
                 elif circuit == 'forbid_drop':
                     self.server.irrigation.set_forbid_drop(value)
-                    
- 
-                s = {}
+
+            elif self.path == '/alarm/get/':
+                s = self.server.saver.partial_get(['alarm.presence',
+                                                   'alarm.mask',
+                                                   'alarm.statii',
+                                                   'failures.alarm']) or {}
+            elif self.path == '/alarm/arm/':
+                circuit, = args['circuit']
+                self.server.alarm.arm(int(circuit))
+            elif self.path == '/alarm/disarm/':
+                circuit, = args['circuit']
+                self.server.alarm.disarm(int(circuit)) 
+            elif self.path == '/alarm/clear/persistence/':
+                self.server.alarm.clear_persistence()
             else:
                 s = {'error': 'unrecognized command'}
                 
@@ -124,6 +137,7 @@ class HttpServerThread(BaseThread):
         
         httpd = TrueHTTPServer(('', 8080), HttpServerThread.HTTPRequestHandler)
         httpd.reader = self.tqm.get_reader_for('httpserver')
+        httpd.alarm = self.tqm.get_interface_for('alarm')
         httpd.saver = self.tqm.get_interface_for('saver')
         httpd.irrigation = self.tqm.get_interface_for('irrigation')
         httpd.serve_forever()
