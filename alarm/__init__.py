@@ -14,7 +14,9 @@ class AlarmThread(BaseThread):
         self.saver = tqm.get_interface_for('saver')
 
     def run(self):
-        while True:            
+        while True:         
+            time.sleep(0.5)
+       
             for msg in self.reader:     # Do we have anything to process?
                 if isinstance(msg, ArmCircuit):
                     mask = self.rs485.readRegisters(1, 4071, 1)

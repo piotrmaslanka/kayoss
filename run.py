@@ -1,5 +1,6 @@
 from satella.threads import TQM
 from kayoss.modbus import ModbusThread
+from kayoss.modbus.netserial import NetSerial
 from kayoss.saver import SaverThread
 from kayoss.heating import HeatingThread
 from kayoss.power import PowerThread
@@ -8,7 +9,6 @@ from kayoss.alarm import AlarmThread
 from kayoss.httpserver import HttpServerThread
 from kayoss.sonos import SonosThread
 from kayoss.failures import FailuresThread
-from serial import Serial
 
 if __name__ == '__main__':
     tqm = TQM()
@@ -25,8 +25,8 @@ if __name__ == '__main__':
     tqm.register_interface('failures', FailuresThread.TQMInterface)
     
     saver_t = SaverThread(tqm)
-    rs232_t = ModbusThread(tqm, 'rs232', Serial('COM1', baudrate=9600, parity='N', stopbits=1, timeout=1))
-    rs485_t = ModbusThread(tqm, 'rs485', Serial('COM2', baudrate=9600, parity='N', stopbits=1, timeout=1))
+    rs232_t = ModbusThread(tqm, 'rs232', NetSerial('10.0.0.201'))
+    rs485_t = ModbusThread(tqm, 'rs485', NetSerial('10.0.0.202'))
     heating_t = HeatingThread(tqm)
     power_t = PowerThread(tqm)
     alarm_t = AlarmThread(tqm)

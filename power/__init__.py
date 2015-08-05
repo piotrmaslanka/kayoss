@@ -15,6 +15,8 @@ class PowerThread(BaseThread):
 
     def run(self):
         while True:
+            time.sleep(0.5)
+        
             for msg in self.reader:     # Do we have anything to process?
                 pass
                         

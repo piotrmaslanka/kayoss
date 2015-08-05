@@ -30,5 +30,5 @@ class ModbusThread(BaseThread):
                     lte = self.sercom.getLTEReg(msg.address, msg.port)
 #                    print 'READ LTE %s:%s = %s' % (msg.address, msg.port, lte)
                     msg.deferred.completed(lte)
-            except:
+            except Exception as e:
                 msg.deferred.completed(None)

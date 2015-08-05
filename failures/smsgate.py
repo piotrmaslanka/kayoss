@@ -19,12 +19,12 @@ def send_sms(target, content):
     conn = httplib.HTTPSConnection('api1.multiinfo.plus.pl', '443', cert_file="C:\\kayoss\\failures\\key.pem")
     
     data = urllib.urlencode({
-                       'login': "x",
-                        'password': "x",
-                        'serviceId': "x",
+                       'login': "READY",
+                        'password': "STEADY",
+                        'serviceId': "GO",
                         'text': content,
                         'dest': target,
-                        'orig': "x"
+                        'orig': "LIMUZINA"
                     })
     
     conn.request('GET', '/sendsms.aspx?'+data)

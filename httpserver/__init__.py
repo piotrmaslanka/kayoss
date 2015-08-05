@@ -117,6 +117,12 @@ class HttpServerThread(BaseThread):
                 self.server.alarm.disarm(int(circuit)) 
             elif self.path == '/alarm/clear/persistence/':
                 self.server.alarm.clear_persistence()
+            elif self.path == '/get/cwu_heating_state/':
+                s = self.server.saver.partial_get(['heating.cwu.system_state']) or {}
+            elif self.path == '/cwu_heating_state/make/':
+                self.server.heating.load_cwu()
+            elif self.path == '/cwu_heating_state/antimake/':
+                self.server.heating.forbid_cwu()
             else:
                 s = {'error': 'unrecognized command'}
                 
@@ -139,5 +145,6 @@ class HttpServerThread(BaseThread):
         httpd.reader = self.tqm.get_reader_for('httpserver')
         httpd.alarm = self.tqm.get_interface_for('alarm')
         httpd.saver = self.tqm.get_interface_for('saver')
+        httpd.heating = self.tqm.get_interface_for('heating')
         httpd.irrigation = self.tqm.get_interface_for('irrigation')
         httpd.serve_forever()

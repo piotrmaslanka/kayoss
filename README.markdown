@@ -14,17 +14,6 @@ It serves all collected stuff through HTTP and allows viewing/modification of th
 Of course, requires [Satella](https://github.com/piotrmaslanka/satella).
 
 
-kamkorder
-=========
-It's a program to fetch JPG's from HTTP somewhere (a camera, hopefully) - optionally using authentication - and storing
-them in folders. It will automatically whack a folder if too low space is detected. Disk
-should be large enough to support 2+ days of recording, as entire day is pruned at once
-on low disk space.
-
-For Windows.
-
-palhost & sealhost
-==================
-They are applications to adapt either a TV card input (palhost) or a webcam (sealhost) to HTTP IP interface, collectible by kamkorder.
-
-They are written using DSPack in Delphi7.
+recent
+------
+There were a lost of changes. Kamkorder, PALHOST and SEALHOST were totally ditched because CCTV was dedicated to other hardware. Tibbo's Virtual Serial Port drivers were also removed, as they proved to be uncompilable to latest Raspberry Pi hardware. Therefore, a Tibbo Basic application called _P/6680_ (source will be attached later) was created which emulates a network port using simple streaming. Kayoss has now no dependencies, save for _soco_ and _satella_

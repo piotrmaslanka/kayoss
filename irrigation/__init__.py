@@ -15,9 +15,12 @@ class IrrigationThread(BaseThread):
         self.rs485 = tqm.get_interface_for('rs485')
         self.reader = tqm.get_reader_for('irrigation')
         self.saver = tqm.get_interface_for('saver')
+        self.sonos = tqm.get_interface_for('sonos')
 
     def run(self):
         while True:
+            time.sleep(0.5)
+            
             for msg in self.reader:     # Do we have anything to process?
                 ltd = {SetForbidDrop: 4091,
                        SetForbidIrrig: 4092,
@@ -66,6 +69,18 @@ class IrrigationThread(BaseThread):
                 self.saver.save('irrigation.rainMinutes', minTrwaDeszcz)
                 self.saver.save('irrigation.overrideKos', ovKos)
                 self.saver.save('irrigation.forbidKos', forbKos)
+                
+            # check Doorbell
+            pk = self.rs485.readRegisters(28, 4112, 1)
+            if pk != None:
+                if pk == 1:
+                    print 'pk engaged'				
+                    while pk in (1, None):                        
+                        self.rs485.writeRegister(28, 4112, 0, deferred=False, enforce=True)
+                        pk = self.rs485.readRegisters(28, 4112)
+                        print 'pk is %s' % (pk, )
+
+                    self.sonos.doorbell()
     
             f_labels = (
                 (7082, 'L2', 'failures.power.fuse.l2'),

@@ -93,7 +93,7 @@ class SerialCommunication(object):
 				msg = map(lambda x: 65535-x if x > 65535 else x, msg)
 			return msg
 		else:
-			print 'MODBUS Read Register failed for %s:%s' % (a, r)
+			print 'MODBUS Read Register failed for %s:%s with %s' % (a, r, repr(msg))
 			raise Exception, 'CRC - '+str(map(ord, msg))
 
 	def getLTEReg(self, a, r):

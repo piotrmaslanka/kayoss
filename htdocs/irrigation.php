@@ -153,11 +153,11 @@
 		<div id="section-visstan"></div>
 		<div class="rainblock">
 			<div class="descript">Wczoraj</div>
-			<div class="value"><strong id="mkirrigation-prevdayCounter"></strong>l</div>
+			<div class="value"><strong id="mkirrigation-prevdayCounter"></strong>0 l</div>
 		</div>
 		<div class="rainblock">
 			<div class="descript">Dzisiaj</div>
-			<div class="value"><strong id="mkirrigation-dailyCounter"></strong>l</div>
+			<div class="value"><strong id="mkirrigation-dailyCounter"></strong>0 l</div>
 		</div>
 		<div style="clear: both;"></div>
 				

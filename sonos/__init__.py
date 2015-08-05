@@ -1,10 +1,9 @@
 from satella.threads import BaseThread
-from kayoss.sonos.ifc import SonosInterface, Doorbell
+from kayoss.sonos.ifc import SonosInterface, Doorbell, Komorka
 import soco, datetime, time
 
-BELL_URI = 'http://10.0.0.200/bell.mp3'
-BELL_VOLUME = 30
-BELL_DURATION = 5
+BELL = ('http://10.0.0.200/bell.mp3', 35, 7)
+KOMU = ('http://10.0.0.200/komorka.mp3', 30, 7)
 
 class SonosThread(BaseThread):
     
@@ -27,11 +26,17 @@ class SonosThread(BaseThread):
         Ooh.
         
         The player thread"""
-        def __init__(self, device):
+        def __init__(self, device, soundarg):
             BaseThread.__init__(self)
             self.device = device
+            self.arg = soundarg
         
         def run(self):
+            print u'Playing %s on %s' % (self.arg[0], self.device.player_name)
+            VOL = self.arg[1]
+            URI = self.arg[0]
+            DELAY = self.arg[2]
+            
             cpe = self.device.get_current_track_info()
             
             was_playing = self.device.get_current_transport_info()['current_transport_state'] == 'PLAYING'
@@ -39,9 +44,9 @@ class SonosThread(BaseThread):
             
             last_volume = self.device.volume
             
-            self.device.volume = BELL_VOLUME
-            self.device.play_uri(BELL_URI)
-            time.sleep(BELL_DURATION)
+            self.device.volume = VOL
+            self.device.play_uri(URI)
+            time.sleep(DELAY)
             
             if not was_playing:
                 self.device.stop()
@@ -55,18 +60,28 @@ class SonosThread(BaseThread):
             self.device.volume = last_volume
         
     def run(self):
-        self._rediscover_sonos_devices()
+        self._rediscover_sonos_devices()        
         self.last_rediscovered = time.time()
         print '[SonosThread] Found %s devices' % (len(self.zones), )
         
-        for msg in self.reader:
-            
-            if datetime.datetime.now().hour == 3 and (time.time() - self.last_rediscovered) > 3600:
+        
+        last_dong_on = time.time()
+
+        while True:
+            if time.time() - self.last_rediscovered > 3600:
                 self._rediscover_sonos_devices()
+
+            for msg in self.reader:
+                if isinstance(msg, Doorbell):
+                    if time.time() - last_dong_on < 10:
+                        continue
+                    else:
+                        last_dong_on = time.time()
+                        for device in self.zones:
+                            SonosThread.DingDongThread(device, BELL).start()
+                if isinstance(msg, Komorka):
+                    for device in self.zones:
+                        SonosThread.DingDongThread(device, KOMU).start()
+                                         
+
             
-            if isinstance(msg, Doorbell):
-                for device in self.zones:
-                    SonosThread.DingDongThread(device).start()
-                                         
-                                         
-                            

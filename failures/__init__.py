@@ -1,5 +1,6 @@
 from __future__ import division
 import time
+from datetime import datetime
 from satella.threads import BaseThread
 from kayoss.failures.ifc import FailuresInterface
 from kayoss.failures.smsgate import send_sms
@@ -12,6 +13,7 @@ class FailuresThread(BaseThread):
         BaseThread.__init__(self)
         self.reader = tqm.get_reader_for('failures')
         self.saver = tqm.get_interface_for('saver')
+        self.sonos = tqm.get_interface_for('sonos')
         self.statedict = dict(((k, False) for k in FailuresThread.LABEL_DICT.iterkeys()))
         
     LABEL_DICT = {
@@ -26,6 +28,10 @@ class FailuresThread(BaseThread):
     }
         
     def run(self):
+        
+        
+        last_komorka_on = datetime.now().hour
+        
         while True:
             time.sleep(1)
             for msg in self.reader:     # Do we have anything to process?
@@ -44,11 +50,21 @@ class FailuresThread(BaseThread):
                 if v and not self.statedict[k]:
                     # Alarm occurred
                     msg = 'Wystapil '+FailuresThread.LABEL_DICT[k]
-                    send_sms('609224334', msg)
+                    send_sms('xxxxxxxxx', msg)
                               
                 elif not v and self.statedict[k]:
                     # Alarm out
                     msg = 'Odwoluje '+FailuresThread.LABEL_DICT[k]
-                    send_sms('609224334', msg)
+                    send_sms('xxxxxxxxx', msg)
                               
                 self.statedict[k] = v
+
+            s = self.saver.get(['alarm.presence']) or {}
+            if 'alarm.presence' in s:
+                komorka = s['alarm.presence'] & 16
+                if komorka:
+                    if datetime.now().hour != last_komorka_on:
+                        if datetime.now().hour in (21, 22, 23, 0, 1, 2, 3, 4, 5):
+                            last_komorka_on = datetime.now().hour
+                            self.sonos.komorka()
+            
