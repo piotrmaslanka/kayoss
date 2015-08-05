@@ -25,6 +25,6 @@ For Windows.
 
 palhost & sealhost
 ==================
-I'll attach them later. They are applications to adapt either a TV card input (palhost) or a webcam (sealhost) to HTTP IP interface, collectible by kamkorder.
+They are applications to adapt either a TV card input (palhost) or a webcam (sealhost) to HTTP IP interface, collectible by kamkorder.
 
 They are written using DSPack in Delphi7.
