@@ -5,7 +5,8 @@ This object is completely replaceable with serial.Serial as far as kayoss is con
 from socket import socket, AF_INET, SOCK_STREAM, error as SocketError, timeout as SocketTimeoutError
 import time
 
-EWOULDBLOCK = 10035
+EWOULDBLOCK = (10035, 11)
+
 
 class NetSerial(object):
     def __init__(self, ip):
@@ -32,7 +33,7 @@ class NetSerial(object):
         except SocketTimeoutError:
             pass
         except SocketError as e:
-            if e.errno != EWOULDBLOCK:
+            if e.errno not in EWOULDBLOCK:
                 raise
     
     def write(self, data):

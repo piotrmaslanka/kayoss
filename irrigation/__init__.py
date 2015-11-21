@@ -16,6 +16,7 @@ class IrrigationThread(BaseThread):
         self.reader = tqm.get_reader_for('irrigation')
         self.saver = tqm.get_interface_for('saver')
         self.sonos = tqm.get_interface_for('sonos')
+        self.failures = tqm.get_interface_for('failures')
 
     def run(self):
         while True:
@@ -51,7 +52,7 @@ class IrrigationThread(BaseThread):
                 self.saver.save('irrigation.forbidIrrig', forbidIrrig)
             
             pk = self.rs485.readRegisters(28, 4100, 7)
-            if pk != None:
+            if pk is not None:
                 ovS1, ovS2, ovS3, ovS4, ovS5, ovS6, ovNakr = pk
                 
                 self.saver.save('irrigation.overrideS1', ovS1)
@@ -63,7 +64,7 @@ class IrrigationThread(BaseThread):
                 self.saver.save('irrigation.overrideNakr', ovNakr)                
                 
             pk = self.rs485.readRegisters(28, 4107, 5)
-            if pk != None:
+            if pk is not None:
                 minTrwaDeszcz, kosMinPad, kosWybieg, ovKos, forbKos = pk
     
                 self.saver.save('irrigation.rainMinutes', minTrwaDeszcz)
@@ -72,7 +73,8 @@ class IrrigationThread(BaseThread):
                 
             # check Doorbell
             pk = self.rs485.readRegisters(28, 4112, 1)
-            if pk != None:
+            print 'pk is %s' % (pk, )
+            if pk is not None:
                 if pk == 1:
                     print 'pk engaged'				
                     while pk in (1, None):                        
@@ -81,6 +83,7 @@ class IrrigationThread(BaseThread):
                         print 'pk is %s' % (pk, )
 
                     self.sonos.doorbell()
+                    self.failures.doorbell()
     
             f_labels = (
                 (7082, 'L2', 'failures.power.fuse.l2'),

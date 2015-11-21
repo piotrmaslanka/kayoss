@@ -13,12 +13,16 @@ class SonosThread(BaseThread):
         BaseThread.__init__(self)
         self.reader = tqm.get_reader_for('sonos', None)
         self.devices = []
+        self.zones = set()
         
     def _rediscover_sonos_devices(self):
         zones = soco.discover()
         while zones is None:
             zones = soco.discover()
-        self.zones = list(zones)
+
+        for zone in zones:
+            self.zones.add(zone)
+
         self.last_rediscovered = time.time()
 
     class DingDongThread(BaseThread):
@@ -58,13 +62,12 @@ class SonosThread(BaseThread):
                     self.device.seek(cpe['position'])
                     
             self.device.volume = last_volume
-        
+
     def run(self):
         self._rediscover_sonos_devices()        
         self.last_rediscovered = time.time()
         print '[SonosThread] Found %s devices' % (len(self.zones), )
-        
-        
+
         last_dong_on = time.time()
 
         while True:
@@ -73,7 +76,7 @@ class SonosThread(BaseThread):
 
             for msg in self.reader:
                 if isinstance(msg, Doorbell):
-                    if time.time() - last_dong_on < 10:
+                    if (time.time() - last_dong_on) < 10:
                         continue
                     else:
                         last_dong_on = time.time()
@@ -82,6 +85,4 @@ class SonosThread(BaseThread):
                 if isinstance(msg, Komorka):
                     for device in self.zones:
                         SonosThread.DingDongThread(device, KOMU).start()
-                                         
 
-            
