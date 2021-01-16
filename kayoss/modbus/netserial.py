@@ -33,6 +33,8 @@ class NetSerial:
         self.sock.setblocking(0)
         try:
             self.sock.recv(512)
+        except ConnectionResetError:
+            self.__recon()
         except SocketTimeoutError:
             pass
         except SocketError as e:
@@ -59,6 +61,8 @@ class NetSerial:
                     logger.info('read(): reconnect')
                     self.__recon()
                 p = p + s
+            except ConnectionResetError:
+                self.__recon()
             except SocketTimeoutError:
                 logger.info('somewhat timeoutish')
                 break

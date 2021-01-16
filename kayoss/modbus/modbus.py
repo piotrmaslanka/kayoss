@@ -101,8 +101,10 @@ class SerialCommunication(Monitor):
 		mmr = self.mm.getReadQuery(a, r, amount)
 		self.socket.flushInput()
 		self.socket.flushOutput()
+		logger.warning(f'Sending {mmr}')
 		self.socket.write(mmr)
 		msg = self.socket.read(5+amount*2)
+		logger.warning(f'Received {msg}')
 		if self.mm.validate(msg):
 			msg = self.mm.parseReadRequest(msg, amount)
 			length = len(msg)
