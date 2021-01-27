@@ -13,7 +13,11 @@ logger = logging.getLogger(__name__)
 
 class NetSerial:
     def __init__(self, ip):
-        self.addr = (ip, 6680)
+        if ':' not in ip:
+            self.addr = (ip, 6680)
+        else:
+            ip, port = ip.split(':')
+            self.addr = (ip, int(port))
         self.__recon()
 
     def __recon(self):
@@ -63,6 +67,7 @@ class NetSerial:
                 p = p + s
             except ConnectionResetError:
                 self.__recon()
+                break
             except SocketTimeoutError:
                 logger.info('somewhat timeoutish')
                 break
